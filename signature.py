@@ -5,15 +5,15 @@ from datetime import datetime
 import requests
 
 
-secret = b'changeme'
 # secret = b'P/EbcdS1tuExUVPz7jI/2ZtayEZb2oDvWd5IYfGQ0jc='
+secret = b'changeme'
 method = 'POST'
 filename = 'image.jpg'
+adr = 'http://localhost:8080'
 # current date and time
 timestamp = int(datetime.timestamp(datetime.now()))
 print(timestamp)
 
-adr = 'http://localhost:8080'
 print(adr)
 
 data = f"{method}|{adr}|{str(timestamp)}".encode()
@@ -29,4 +29,4 @@ with open(filename, 'rb') as f:
 res = requests.post(adr,
                     data=image,
                     headers={'Content-Type': 'image/jpeg', 'X-Authenticate-Timestamp': f'{timestamp}', 'X-Authenticate-Signature': f'{hmac_now}'})
-print(res.json())
+print(res)
