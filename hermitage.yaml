@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: podhermitage
+  name: pod_hermitage
+spec:
+  restartPolicy: Never
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+  - name: dotenv
+    hostPath:
+      path: .env.example
+  containers:
+  - name: hermitage-php
+    command:
+    - php-fpm
+    image: docker.io/nanemo/hermitage-php:1.0.0
+    resources: {}
+    volumeMounts:
+    - name: shared-data
+      mountPath: /app
+    - name: dotenv
+      mountPath: /app/.env
+      readOnly: true
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+  - name: hermitage-nginx
+    command:
+    - nginx
+    - -g
+    - daemon off;
+    image: docker.io/nanemo/hermitage-nginx:1.0.0
+    ports:
+    - containerPort: 8080
+      hostPort: 8080
+    resources: {}
+    volumeMounts:
+    - name: shared-data
+      mountPath: /app
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE

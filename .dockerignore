@@ -1,0 +1,7 @@
+*Dockerfile*
+*docker-compose*
+*.jpg
+*.yaml
+*.py
+*.gitignore
+.env
