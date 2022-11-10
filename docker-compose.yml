@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Hermitage.Containerfile
-    image: docker.io/nanemo/hermitage-php:1.0.0
+    image: docker.io/nanemo/hermitage-php:1.0.1
     volumes:
       - type: volume
         target: /app

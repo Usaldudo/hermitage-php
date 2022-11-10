@@ -24,6 +24,7 @@ RUN apk update && apk add --no-cache \
     php7-zlib \
     libpng \
     libpng-dev \
+    curl=7.80.0-r4 \
     freetype-dev \
     libjpeg-turbo-dev \
     && apk add --no-cache $PHPIZE_DEPS \
