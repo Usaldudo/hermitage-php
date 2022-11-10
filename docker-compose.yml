@@ -3,7 +3,7 @@ services:
   php:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Hermitage.Containerfile
     image: docker.io/nanemo/hermitage-php:1.0.0
     volumes:
       - type: volume
@@ -16,7 +16,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: Nginx.Dockerfile
+      dockerfile: Nginx.Containerfile
     image: docker.io/nanemo/hermitage-nginx:1.0.0
     ports:
       - "8080:8080"
