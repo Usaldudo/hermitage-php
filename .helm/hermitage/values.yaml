@@ -1,0 +1,117 @@
+replicaCount: 1
+
+image:
+  php:
+    repository: docker.io/nanemo/hermitage-php
+    tag: 1.0.1
+  nginx:
+    repository: docker.io/nanemo/hermitage-nginx
+    tag: 1.0.0
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  capabilities:
+    drop:
+    - CAP_MKNOD
+    - CAP_NET_RAW
+    - CAP_AUDIT_WRITE
+  fsGroup: 101
+
+securityContext: {}
+
+service:
+  name: http
+  type: ClusterIP
+  port: 8080
+  metrics:
+    name: prometheus
+    port: 9113
+
+readinessProbe:
+  httpGet:
+    path: /probes/health
+    port: 8088 # server_name metrics from nginx.conf
+  initialDelaySeconds: 5
+  timeoutSeconds: 5
+  periodSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+livenessProbe:
+  httpGet:
+    path: /probes/health
+    port: 8088 # server_name metrics from nginx.conf
+  initialDelaySeconds: 5
+  timeoutSeconds: 5
+  periodSeconds: 15
+  failureThreshold: 3
+  successThreshold: 1
+
+# pdb: {}
+  # minAvailable: 1
+
+resources:
+  php: {}
+  nginx: {}
+  exporter: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+appSettings: {}
+
+dotenv:
+  .env: |
+    AUTH_SECRET="P/EbcdS1tuExUVPz7jI/2ZtayEZb2oDvWd5IYfGQ0jc="
+    AUTH_TIMESTAMP_EXPIRES=120
+    STORAGE_ADAPTER=local
+
+nginxConfig:
+  nginx.conf: |
+    server {
+      listen 8080 default_server;
+      listen [::]:8080 default_server;
+      root /app/public;
+      index index.php index.html index.htm;
+
+      server_name _;
+
+      location / {
+        try_files $uri /index.php$is_args$args;
+        gzip_static on;
+      }
+      location ~ ^/index\.php(/|$) {
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        fastcgi_pass 127.0.0.1:9000;
+        include fastcgi_params;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+      }
+      location ~ \.php$ {
+        try_files $uri =404;
+      }
+    }
+
+    server {
+      server_name metrics;
+      listen 8088;
+      listen [::]:8088;
+      location /probes/health {
+        access_log off;
+        return 200 "healthy";
+      }
+      location /nginx_status {
+        access_log off;
+        stub_status;
+      }
+    }
