@@ -17,7 +17,7 @@ spec:
   - name: hermitage-php
     command:
     - php-fpm
-    image: docker.io/nanemo/hermitage-php:1.0.0
+    image: docker.io/nanemo/hermitage-php:1.0.1
     resources: {}
     volumeMounts:
     - name: shared-data
