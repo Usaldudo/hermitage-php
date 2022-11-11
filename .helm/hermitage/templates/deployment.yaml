@@ -87,16 +87,16 @@ spec:
         configMap:
           name: {{ include "default.fullname" . }}-nginx-config
           items:
-            - key: nginx.conf
-              path: nginx.conf
+            - key: nginxconf
+              path: nginxconf
       - name: shared-data
         emptyDir: {}
       - name: dotenv
         secret:
           secretName: {{ include "default.fullname" . }}-dotenvfile
           items:
-          - key: .env
-            path: .env
+          - key: env
+            path: env
       - name: storage
         persistentVolumeClaim:
           claimName: {{ include "default.fullname" . }}-pvc

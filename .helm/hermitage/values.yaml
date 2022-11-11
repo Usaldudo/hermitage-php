@@ -16,14 +16,14 @@ fullnameOverride: ""
 podAnnotations: {}
 
 podSecurityContext:
-  capabilities:
-    drop:
-    - CAP_MKNOD
-    - CAP_NET_RAW
-    - CAP_AUDIT_WRITE
   fsGroup: 101
 
 securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - CAP_MKNOD
+  #   - CAP_NET_RAW
+  #   - CAP_AUDIT_WRITE
 
 pvc:
   size: 50Gi

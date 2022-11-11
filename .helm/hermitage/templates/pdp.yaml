@@ -1,5 +1,5 @@
 {{- if hasKey .Values "pdb" }}
-{{- $values := index .Values "pdb$values" -}}
+{{- $values := index .Values "pdb" -}}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
