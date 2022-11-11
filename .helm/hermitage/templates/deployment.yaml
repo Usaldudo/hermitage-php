@@ -1,3 +1,5 @@
+{{- $php := index .Values.image "php" -}}
+{{- $nginx := index .Values.image "nginx" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,7 +30,7 @@ spec:
         - name: {{ .Chart.Name }}-php
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.php.repository }}:{{ .Values.image.php.tag | default .Chart.AppVersion }}"
+          image: "{{ $php.repository }}:{{ $php.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - php-fpm
@@ -39,12 +41,14 @@ spec:
               mountPath: /app/.env
               subPath: .env
               readOnly: true
+            - name: storage
+              mountPath: /app/storage
           resources:
             {{- toYaml .Values.resources.php | nindent 12 }}
         - name: {{ .Chart.Name }}-nginx
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.nginx.repository }}:{{ .Values.image.nginx.tag | default .Chart.AppVersion }}"
+          image: "{{ $nginx.repository }}:{{ $nginx.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - nginx
@@ -81,7 +85,7 @@ spec:
       volumes:
       - name: nginx-config
         configMap:
-          name: nginx-config
+          name: {{ include "default.fullname" . }}-nginx-config
           items:
             - key: nginx.conf
               path: nginx.conf
@@ -89,10 +93,13 @@ spec:
         emptyDir: {}
       - name: dotenv
         secret:
-          secretName: dotenvfile
+          secretName: {{ include "default.fullname" . }}-dotenvfile
           items:
           - key: .env
             path: .env
+      - name: storage
+        persistentVolumeClaim:
+          claimName: {{ include "default.fullname" . }}-pvc
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

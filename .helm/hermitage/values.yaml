@@ -25,6 +25,13 @@ podSecurityContext:
 
 securityContext: {}
 
+pvc:
+  size: 50Gi
+  # storageClassName: manual
+
+# vpa:
+  # resourcePolicy: {}
+
 service:
   name: http
   type: ClusterIP

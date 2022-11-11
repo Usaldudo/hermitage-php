@@ -1,0 +1,19 @@
+{{- $values := index .Values "pvc" -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "default.fullname" . }}-pvc
+  labels:
+    {{- include "default.labels" . | nindent 4 }}
+spec:
+{{- if $values }}
+{{- if hasKey $values "storageClassName" }}
+  storageClassName: {{ $values.storageClassName }}
+{{- end }}
+{{- end }}
+  selector:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $values.size }}
